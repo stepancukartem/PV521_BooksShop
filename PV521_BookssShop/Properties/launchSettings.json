@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "PV521_BookssShop": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:62048;http://localhost:62049"
+    }
+  }
+}
