@@ -21,30 +21,46 @@ namespace PV521_BooksShop.DAL.Repositories
                 .FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<List<Book>> GetBooksByAuthorAsync(int authorId)
+        {
+            return await _context.Books
+                .AsNoTracking()
+                .Where(b => b.AuthorId == authorId)
+                .ToListAsync();
+        }
+
         public async Task<bool> CreateAsync(Author author)
         {
             await _context.Authors.AddAsync(author);
+
             int result = await _context.SaveChangesAsync();
+
             return result > 0;
         }
 
-        public async Task<int> CreateRangeAsync(IEnumerable<Author> authors)
+        public async Task<int> CreateRangeAsync(
+            IEnumerable<Author> authors)
         {
             await _context.Authors.AddRangeAsync(authors);
+
             return await _context.SaveChangesAsync();
         }
 
         public async Task<bool> UpdateAsync(Author author)
         {
             _context.Authors.Update(author);
+
             int result = await _context.SaveChangesAsync();
+
             return result > 0;
         }
 
         public async Task<bool> DeleteAsync(Author author)
         {
             _context.Authors.Remove(author);
+
             int result = await _context.SaveChangesAsync();
+
             return result > 0;
         }
 
