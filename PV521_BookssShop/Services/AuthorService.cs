@@ -7,10 +7,14 @@ namespace PV521_BookssShop.Services
     public class AuthorService
     {
         private readonly AuthorRepostiory _authorRepository;
+        private readonly ImageService _imageService;
 
-        public AuthorService(AuthorRepostiory authorRepository)
+        public AuthorService(
+            AuthorRepostiory authorRepository,
+            ImageService imageService)
         {
             _authorRepository = authorRepository;
+            _imageService = imageService;
         }
 
         public async Task<List<AuthorDto>> GetAll()
@@ -48,11 +52,13 @@ namespace PV521_BookssShop.Services
 
         public async Task<AuthorDto?> Create(CreateAuthorDto dto)
         {
+            var imagePath = await _imageService.SaveImageAsync(dto.Image);
+
             var author = new Author
             {
                 Name = dto.Name,
                 Biography = dto.Biography,
-                Image = dto.Image,
+                Image = imagePath,
                 Country = dto.Country,
                 BirthDate = dto.BirthDate
             };
@@ -60,7 +66,10 @@ namespace PV521_BookssShop.Services
             var created = await _authorRepository.CreateAsync(author);
 
             if (!created)
+            {
+                _imageService.DeleteImage(imagePath);
                 return null;
+            }
 
             return new AuthorDto
             {
@@ -73,16 +82,25 @@ namespace PV521_BookssShop.Services
             };
         }
 
-        public async Task<AuthorDto?> Update(int id, UpdateAuthorDto dto)
+        public async Task<AuthorDto?> Update(
+            int id,
+            UpdateAuthorDto dto)
         {
             var author = await _authorRepository.GetByIdAsync(id);
 
             if (author == null)
                 return null;
 
+            string? oldImage = author.Image;
+
+            if (dto.Image != null)
+            {
+                author.Image =
+                    await _imageService.SaveImageAsync(dto.Image);
+            }
+
             author.Name = dto.Name;
             author.Biography = dto.Biography;
-            author.Image = dto.Image;
             author.Country = dto.Country;
             author.BirthDate = dto.BirthDate;
 
@@ -90,6 +108,9 @@ namespace PV521_BookssShop.Services
 
             if (!updated)
                 return null;
+
+            if (dto.Image != null && oldImage != null)
+                _imageService.DeleteImage(oldImage);
 
             return new AuthorDto
             {
@@ -104,7 +125,19 @@ namespace PV521_BookssShop.Services
 
         public async Task<bool> Delete(int id)
         {
-            return await _authorRepository.DeleteAsync(id);
+            var author = await _authorRepository.GetByIdAsync(id);
+
+            if (author == null)
+                return false;
+
+            string? image = author.Image;
+
+            var deleted = await _authorRepository.DeleteAsync(author);
+
+            if (deleted)
+                _imageService.DeleteImage(image);
+
+            return deleted;
         }
     }
 }
