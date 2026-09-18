@@ -41,8 +41,7 @@ namespace PV521_BookssShop.Controllers
         public async Task<ActionResult<AuthorDto>> Create(
             [FromForm] CreateAuthorDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name))
-                return BadRequest("Author name is required.");
+            
 
             var author = await _authorService.Create(dto);
 
@@ -61,8 +60,7 @@ namespace PV521_BookssShop.Controllers
             int id,
             [FromForm] UpdateAuthorDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name))
-                return BadRequest("Author name is required.");
+          
 
             var author = await _authorService.Update(id, dto);
 

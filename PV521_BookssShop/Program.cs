@@ -3,13 +3,19 @@ using PV521_BooksShop.DAL;
 using PV521_BooksShop.DAL.Repositories;
 using PV521_BookssShop.Services;
 using Scalar.AspNetCore;
-
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using PV521_BookssShop.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
 
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString =
