@@ -8,14 +8,21 @@ using FluentValidation.AspNetCore;
 using PV521_BookssShop.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddScoped<ImageService>();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AddControllers();
 
+builder.Services.AddScoped<ImageService>();
+
+builder.Services.AddScoped<GenreRepostiory>();
+builder.Services.AddScoped<GenreService>();
+
+builder.Services.AddScoped<AuthorRepostiory>();
+builder.Services.AddScoped<AuthorService>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString =
@@ -23,9 +30,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
     options.UseNpgsql(connectionString);
 });
-
-builder.Services.AddScoped<AuthorRepostiory>();
-builder.Services.AddScoped<AuthorService>();
 
 var app = builder.Build();
 
@@ -38,7 +42,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

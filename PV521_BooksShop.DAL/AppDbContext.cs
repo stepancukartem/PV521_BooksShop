@@ -11,7 +11,10 @@ namespace PV521_BooksShop.DAL
         }
 
         public DbSet<Book> Books { get; set; }
+
         public DbSet<Author> Authors { get; set; }
+
+        public DbSet<Genre> Genres { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -20,11 +23,14 @@ namespace PV521_BooksShop.DAL
             builder.Entity<Book>(e =>
             {
                 e.HasKey(b => b.Id);
+
                 e.Property(b => b.Title)
                     .HasMaxLength(255)
                     .IsRequired();
+
                 e.Property(b => b.Description)
                     .HasColumnType("text");
+
                 e.Property(b => b.Image)
                     .HasMaxLength(100);
             });
@@ -32,15 +38,28 @@ namespace PV521_BooksShop.DAL
             builder.Entity<Author>(e =>
             {
                 e.HasKey(a => a.Id);
+
                 e.Property(a => a.Name)
                     .HasMaxLength(255)
                     .IsRequired();
+
                 e.Property(a => a.Biography)
                     .HasColumnType("text");
+
                 e.Property(a => a.Image)
                     .HasMaxLength(100);
+
                 e.Property(a => a.Country)
                     .HasMaxLength(255);
+            });
+
+            builder.Entity<Genre>(e =>
+            {
+                e.HasKey(g => g.Id);
+
+                e.Property(g => g.Name)
+                    .HasMaxLength(100)
+                    .IsRequired();
             });
 
             builder.Entity<Book>()
@@ -48,6 +67,11 @@ namespace PV521_BooksShop.DAL
                 .WithMany(a => a.Books)
                 .HasForeignKey(b => b.AuthorId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            builder.Entity<Book>()
+                .HasMany(b => b.Genres)
+                .WithMany(g => g.Books)
+                .UsingEntity(j => j.ToTable("BookGenres"));
         }
     }
 }
