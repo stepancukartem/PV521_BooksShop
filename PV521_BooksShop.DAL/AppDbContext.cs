@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using PV521_BooksShop.DAL.Entities;
 
 namespace PV521_BooksShop.DAL
-{
+{  
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions options)
@@ -10,6 +10,7 @@ namespace PV521_BooksShop.DAL
         {
         }
 
+        public DbSet<Role> Roles { get; set; }
         public DbSet<Book> Books { get; set; }
 
         public DbSet<Author> Authors { get; set; }
@@ -18,6 +19,17 @@ namespace PV521_BooksShop.DAL
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Role>(e =>
+            {
+                e.HasKey(r => r.Id);
+
+                e.Property(r => r.Name)
+                    .HasMaxLength(100)
+                    .IsRequired();
+
+                e.HasIndex(r => r.Name)
+                    .IsUnique();
+            });
             base.OnModelCreating(builder);
 
             builder.Entity<Book>(e =>

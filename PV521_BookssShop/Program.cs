@@ -17,12 +17,15 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GenreRepostiory>();
 builder.Services.AddScoped<GenreService>();
 
+builder.Services.AddScoped<RoleRepository>();
+builder.Services.AddScoped<RoleService>();
+
 builder.Services.AddScoped<AuthorRepostiory>();
 builder.Services.AddScoped<AuthorService>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
-
+builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString =
