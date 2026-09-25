@@ -14,7 +14,7 @@ namespace PV521_BooksShop.DAL
         public DbSet<Book> Books { get; set; }
 
         public DbSet<Author> Authors { get; set; }
-
+        public DbSet<User> Users { get; set; }
         public DbSet<Genre> Genres { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -84,6 +84,20 @@ namespace PV521_BooksShop.DAL
                 .HasMany(b => b.Genres)
                 .WithMany(g => g.Books)
                 .UsingEntity(j => j.ToTable("BookGenres"));
+            builder.Entity<User>(e =>
+            {
+                e.HasKey(u => u.Id);
+
+                e.Property(u => u.Email)
+                    .HasMaxLength(255)
+                    .IsRequired();
+
+                e.Property(u => u.Password)
+                    .IsRequired();
+
+                e.HasIndex(u => u.Email)
+                    .IsUnique();
+            });
         }
     }
 }

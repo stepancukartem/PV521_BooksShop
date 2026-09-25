@@ -20,6 +20,9 @@ builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<RoleRepository>();
 builder.Services.AddScoped<RoleService>();
 
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<UserService>();
+
 builder.Services.AddScoped<AuthorRepostiory>();
 builder.Services.AddScoped<AuthorService>();
 
