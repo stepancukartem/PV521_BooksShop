@@ -6,6 +6,9 @@ using Scalar.AspNetCore;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using PV521_BookssShop.Validators;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +31,7 @@ builder.Services.AddScoped<AuthorService>();
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<CreateAuthorValidator>();
+
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var connectionString =
@@ -37,20 +40,63 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+
+// JWT
+var jwtKey =
+    "PV521_BooksShop_SuperSecretKey_2026_123456789";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+
+    options.DefaultChallengeScheme =
+        JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters =
+        new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(jwtKey)),
+
+            RoleClaimType =
+                System.Security.Claims.ClaimTypes.Role
+        };
+});
+
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference();
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<AppDbContext>();
+
+    await DbSeeder.SeedAsync(dbContext);
 }
 
-app.UseHttpsRedirection();
+    if (app.Environment.IsDevelopment())
+    {
+        app.MapOpenApi();
+        app.MapScalarApiReference();
+    }
 
-app.UseAuthorization();
+    app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+    app.UseStaticFiles();
 
-app.MapControllers();
+    app.UseAuthentication();
+    app.UseAuthorization();
 
-app.Run();
+    app.MapControllers();
+
+    app.Run();

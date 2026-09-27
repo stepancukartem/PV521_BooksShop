@@ -1,4 +1,5 @@
 ﻿using PV521_BookssShop.Dtos;
+using PV521_BooksShop.DAL.Entities;
 using PV521_BooksShop.DAL.Repositories;
 
 namespace PV521_BookssShop.Services
@@ -27,6 +28,11 @@ namespace PV521_BookssShop.Services
             user.Password = dto.NewPassword;
 
             return await _userRepository.UpdateAsync(user);
+        }
+
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            return await _userRepository.GetByEmailAsync(email);
         }
     }
 }

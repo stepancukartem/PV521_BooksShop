@@ -22,7 +22,8 @@ namespace PV521_BookssShop.Controllers
         public async Task<IActionResult> ChangePassword(
             ChangePasswordDto dto)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null)
                 return Unauthorized();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PV521_BookssShop.Dtos;
 using PV521_BookssShop.Services;
 
@@ -6,6 +7,7 @@ namespace PV521_BookssShop.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "admin")]
     public class RoleController : ControllerBase
     {
         private readonly RoleService _roleService;
