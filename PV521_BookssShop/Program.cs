@@ -9,6 +9,8 @@ using PV521_BookssShop.Validators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Serilog;
+using PV521_BookssShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString);
 });
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/log-.txt",
+        rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
+builder.Host.UseSerilog();
 // JWT
 var jwtKey =
     "PV521_BooksShop_SuperSecretKey_2026_123456789";
@@ -75,7 +84,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
+app.UseMiddleware<RequestLoggingMiddleware>();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider
