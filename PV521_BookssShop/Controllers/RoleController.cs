@@ -37,15 +37,13 @@ namespace PV521_BookssShop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<RoleDto>> Create(
-            CreateRoleDto dto)
+        public async Task<ActionResult<RoleDto>> Create(CreateRoleDto dto)
         {
             var role = await _roleService.Create(dto);
 
             if (role == null)
             {
-                return Conflict(
-                    "Роль з таким ім'ям вже існує.");
+                return Conflict("Роль з таким ім'ям вже існує.");
             }
 
             return CreatedAtAction(
